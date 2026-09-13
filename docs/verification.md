@@ -68,10 +68,34 @@ Every rejection carries a stable `code`. Branch on it; the human-readable
 | `timestamp_out_of_tolerance` | Outside the window                                |
 | `secret_empty`               | A supplied secret was the empty string            |
 | `invalid_argument`           | A caller passed a value the API cannot use        |
+| `payload_not_json`           | Verified, but the body did not parse as JSON      |
 
-`SIGIL_ERROR_CODES` exports this set in order.
+`SIGIL_ERROR_CODES` exports this set in order. The list is **append-only** —
+new codes go on the end. Inserting one would renumber every exit code after it
+in the CLI, silently changing what a user's script already branches on.
 
 > **Cross-repo contract.** The `sigil` CLI maps each of these codes to its own
 > process exit code, one for one. Adding, removing or renaming a code here is a
 > breaking change for that mapping — see
 > [`sigil-cli` exit codes](https://github.com/fairsplitt/sigil-cli/blob/main/docs/exit-codes.md).
+
+## Verifying and decoding together
+
+Most receivers verify a request and then parse it. `constructEvent` does both,
+in that order:
+
+```ts
+import { constructEvent } from '@sigil/core';
+
+const event = constructEvent<{ id: string; type: string }>(rawBody, header, secret);
+console.log(event.payload.type, 'signed at', event.timestamp);
+```
+
+Verification runs first, so a body that fails its signature never reaches
+`JSON.parse`. A body that verifies but is not JSON throws `payload_not_json` —
+distinct from `signature_mismatch`, because the two mean very different things:
+one is an attacker or a misconfigured secret, the other is a sender emitting
+something you did not expect.
+
+The type parameter is a convenience for the caller. Nothing validates that the
+payload actually matches it.

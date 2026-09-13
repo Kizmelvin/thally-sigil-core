@@ -20,6 +20,8 @@ export { computeSignature, sign, signingPayload, type SignOptions } from './sign
 
 export { verify, verifyResult, type VerifyOptions, type VerifyResult } from './verify.js';
 
+export { constructEvent, type SigilEvent } from './event.js';
+
 export {
   BASE_DELAY_MS,
   MAX_ATTEMPTS,

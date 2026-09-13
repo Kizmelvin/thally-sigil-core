@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- `constructEvent` verifies a request and decodes its JSON body in one call,
+  in that order, so a body that fails its signature is never parsed.
+- New error code `payload_not_json`, appended to `SIGIL_ERROR_CODES`.
+
 ## 0.1.0
 
 Initial release.
