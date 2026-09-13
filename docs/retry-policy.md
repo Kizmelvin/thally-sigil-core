@@ -50,15 +50,36 @@ nextDelayMs(3, { baseDelayMs: 100, maxDelayMs: 250 }); // 250
 The clamp is a `Math.min` over a floating-point power, not a bit shift. A shift
 would overflow past attempt 31 and hand back a negative delay.
 
-## No jitter
+## Jitter
 
-The schedule is deterministic. Two callers that fail at the same instant will
-retry at the same instant.
+The schedule is deterministic by default. Two senders that fail at the same
+instant retry at the same instant — which is exactly what you do not want when
+the thing they are all retrying against has just come back up.
 
-That is a deliberate trade. A scheduler that persists "next attempt at T" has
-to be able to recompute T exactly after a restart, and it cannot do that if the
-library rolled a die. Spread the herd at the layer that owns the queue:
+Set `jitter` to spread them:
 
 ```ts
-const delay = nextDelayMs(attempt) + Math.floor(Math.random() * 1000);
+nextDelayMs(4, { jitter: 0.2 });  // somewhere in 6400–8000ms
+retrySchedule({ jitter: 0.2 });   // the whole schedule, spread
 ```
+
+`jitter` is the fraction of a delay that may be removed, in `(0, 1]`. `0.2`
+spreads each delay over the 80–100% band. Anything outside the range throws
+`invalid_argument`.
+
+Jitter only ever **subtracts**. A retry that waited *longer* than the published
+schedule would push the final attempt past the documented give-up time, and
+callers size their dead-letter alerting on that number.
+
+### Keeping it reproducible
+
+Randomness defaults to `Math.random`, which a scheduler that persists "next
+attempt at T" cannot recompute after a restart. Pass your own source instead:
+
+```ts
+const random = seededRandom(deliveryId);
+nextDelayMs(attempt, { jitter: 0.2, random });
+```
+
+With a seed derived from the delivery, the same delivery always gets the same
+schedule, and two different deliveries still get different ones.
