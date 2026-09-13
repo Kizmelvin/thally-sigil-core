@@ -13,7 +13,8 @@ export type SigilErrorCode =
   | 'signature_mismatch'
   | 'timestamp_out_of_tolerance'
   | 'secret_empty'
-  | 'invalid_argument';
+  | 'invalid_argument'
+  | 'payload_not_json';
 
 /** Every code, in the order the CLI's exit-code table lists them. */
 export const SIGIL_ERROR_CODES: readonly SigilErrorCode[] = [
@@ -25,6 +26,7 @@ export const SIGIL_ERROR_CODES: readonly SigilErrorCode[] = [
   'timestamp_out_of_tolerance',
   'secret_empty',
   'invalid_argument',
+  'payload_not_json',
 ] as const;
 
 /**

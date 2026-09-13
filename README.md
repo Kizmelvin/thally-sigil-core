@@ -52,6 +52,15 @@ try {
 rejection. `verifyResult` returns `{ ok: false, code }` instead, for callers
 that would rather branch than catch.
 
+To verify and decode in one step, use `constructEvent`:
+
+```ts
+import { constructEvent } from '@sigil/core';
+
+const event = constructEvent<{ type: string }>(rawBody, header, secret);
+// { timestamp: 1767225600, payload: { type: 'invoice.paid' } }
+```
+
 Read the raw request body. A framework that has already parsed and re-encoded
 JSON for you has destroyed the bytes the signature covers.
 
