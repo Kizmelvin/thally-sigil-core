@@ -9,7 +9,17 @@ export interface ParsedHeader {
   signatures: string[];
 }
 
-const HEX_64 = /^[0-9a-f]{64}$/;
+/**
+ * A SHA-256 digest, lower-case hex.
+ *
+ * Upper case is rejected rather than folded so that a digest has exactly one
+ * valid encoding on the wire.
+ */
+const HEX_DIGEST = /^[0-9a-f]{64}$/;
+
+function isHexDigest(value: string): boolean {
+  return HEX_DIGEST.test(value);
+}
 
 /**
  * Parse a `Sigil-Signature` header.
@@ -51,7 +61,7 @@ export function parseHeader(header: string): ParsedHeader {
       }
       timestamp = parseTimestamp(value);
     } else if (key === SIGNATURE_VERSION) {
-      if (!HEX_64.test(value)) {
+      if (!isHexDigest(value)) {
         throw new SigilError(
           'header_malformed',
           `Signature "${value}" is not 64 lower-case hex characters.`,
