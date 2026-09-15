@@ -1,0 +1,36 @@
+---
+title: Signing
+description: How Sigil constructs HMAC-SHA256 webhook signatures.
+---
+
+# Signing
+
+Sigil signs webhook payloads using **HMAC-SHA256**.
+
+```
+signature = "sha256=" + HMAC-SHA256(secret, rawPayload).hex()
+```
+
+1. Take the **raw payload string** — exactly as it will be sent in the request body
+2. Compute **HMAC-SHA256** using your signing secret as the key
+3. Hex-encode the result
+4. Prepend `sha256=` to form the final signature
+
+The result is placed in the `X-Sigil-Signature` request header.
+
+## Example
+
+```typescript
+import { sign } from '@fairsplitt/sigil-core'
+
+const signature = sign(
+  '{"event":"charge.succeeded","id":"ch_01abc"}',
+  'sk_live_secret'
+)
+// "sha256=7f83b1657ff1fc53b92dc18148..."
+```
+
+## What counts as the payload
+
+The payload is the **exact bytes sent as the HTTP request body** — whitespace,
+key ordering, and encoding all matter. Use the raw string, not a parsed object.

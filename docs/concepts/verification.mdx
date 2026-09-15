@@ -1,0 +1,39 @@
+---
+title: Verification
+description: What verify checks and how to use it safely.
+---
+
+# Verification
+
+`verify` recomputes the expected signature from the payload and secret, then
+compares it to the received signature using **constant-time comparison** to
+prevent timing attacks.
+
+## What it checks
+
+1. The `signature` string starts with a supported algorithm prefix (`sha256=`)
+2. The recomputed digest matches the received digest — compared in constant time
+3. Returns `true` on match, `false` on mismatch
+
+## Usage
+
+```typescript
+import { verify } from '@fairsplitt/sigil-core'
+
+const valid = verify(rawBody, receivedSignature, secret)
+```
+
+## Why constant-time comparison matters
+
+A naive `===` comparison leaks timing information that can be used to forge
+signatures byte-by-byte. Sigil uses `crypto.timingSafeEqual` — never compare
+signatures yourself with string equality.
+
+## Common reasons verification fails
+
+| Cause | Fix |
+|-------|-----|
+| Payload parsed before verifying | Pass the raw request body string |
+| Wrong secret | Confirm the secret matches what was used to sign |
+| Signature header missing | Check `X-Sigil-Signature` header name casing |
+| Encoding mismatch | Ensure both sides use UTF-8 |

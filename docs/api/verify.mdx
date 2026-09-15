@@ -1,0 +1,43 @@
+---
+title: verify()
+description: Verifies a webhook signature using constant-time comparison.
+---
+
+# verify(payload, signature, secret)
+
+## Signature
+
+```typescript
+function verify(payload: string, signature: string, secret: string): boolean
+```
+
+## Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `payload` | `string` | The raw request body (not parsed JSON) |
+| `signature` | `string` | The `X-Sigil-Signature` header value |
+| `secret` | `string` | Your webhook signing secret |
+
+## Returns
+
+`true` if valid, `false` if not.
+
+## Example
+
+```typescript
+import { verify } from '@fairsplitt/sigil-core'
+
+const isValid = verify(
+  rawBody,
+  req.headers['x-sigil-signature'],
+  process.env.WEBHOOK_SECRET
+)
+
+if (!isValid) return res.status(401).end()
+```
+
+## Throws
+
+`TypeError` if any argument is not a non-empty string.
+`Error` if `signature` does not start with a recognised algorithm prefix.

@@ -1,0 +1,15 @@
+---
+title: Changelog
+description: Release history for sigil-core.
+---
+
+# Changelog
+
+## v0.1.0
+
+- `sign(payload, secret)` — HMAC-SHA256 payload signing
+- `verify(payload, signature, secret)` — constant-time signature verification
+- `decode(signature)` — signature string parser
+- `retrySchedule(attempt)` — deterministic delivery retry backoff
+- Zero runtime dependencies
+- Full TypeScript types included

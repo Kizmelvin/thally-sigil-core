@@ -1,0 +1,36 @@
+---
+title: sign()
+description: Signs a webhook payload and returns an X-Sigil-Signature header value.
+---
+
+# sign(payload, secret)
+
+## Signature
+
+```typescript
+function sign(payload: string, secret: string): string
+```
+
+## Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `payload` | `string` | The raw request body to sign |
+| `secret` | `string` | Your webhook signing secret |
+
+## Returns
+
+A `string` in the format `sha256=<hex-digest>`.
+
+## Example
+
+```typescript
+import { sign } from '@fairsplitt/sigil-core'
+
+const sig = sign('{"event":"order.created"}', 'sk_live_abc123')
+// "sha256=9f86d081884c7d659..."
+```
+
+## Throws
+
+`TypeError` if either argument is not a non-empty string.

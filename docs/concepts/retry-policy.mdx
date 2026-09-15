@@ -1,0 +1,44 @@
+---
+title: Retry Policy
+description: Sigil's delivery retry backoff schedule.
+---
+
+# Retry Policy
+
+When a webhook delivery fails, Sigil retries with an exponential backoff.
+The schedule is deterministic — `retrySchedule(n)` always returns the same
+delay for attempt `n`.
+
+## Schedule
+
+| Attempt | Delay | Cumulative elapsed |
+|---------|-------|--------------------|
+| 1 | Immediate | T+0 |
+| 2 | 5 minutes | T+5m |
+| 3 | 30 minutes | T+35m |
+| 4 | 2 hours | T+2h 35m |
+| 5 | 8 hours | T+10h 35m |
+
+After attempt 5, the delivery is marked failed with no further retries.
+
+## Using retrySchedule
+
+```typescript
+import { retrySchedule } from '@fairsplitt/sigil-core'
+
+retrySchedule(1)  // 0
+retrySchedule(2)  // 300000  (5 min)
+retrySchedule(3)  // 1800000 (30 min)
+retrySchedule(4)  // 7200000 (2 hr)
+retrySchedule(5)  // 28800000 (8 hr)
+```
+
+Throws `RangeError` for attempts outside `1–5`.
+
+## What counts as a failure
+
+- HTTP response status outside `2xx`
+- Connection timeout (30 seconds)
+- TLS handshake failure
+
+Redirects (`3xx`) are not followed — they count as failures.

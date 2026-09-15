@@ -1,0 +1,37 @@
+---
+title: Introduction
+description: Webhook signing, verification, and delivery-retry policy. Dependency-free and deterministic.
+---
+
+# sigil-core
+
+`@sigil/core` is the source of truth for Sigil's signature format. It handles webhook
+signing, verification, and delivery-retry policy — with no dependencies, no network
+calls, and no clock reads you cannot control.
+
+## What's in the box
+
+| Export | What it does |
+|--------|-------------|
+| `sign(payload, secret)` | Signs a payload and returns an `X-Sigil-Signature` header value |
+| `verify(payload, signature, secret)` | Verifies a signature — returns `true` or `false` |
+| `decode(signature)` | Decodes a signature into its algorithm and digest |
+| `retrySchedule(attempt)` | Returns the delay in ms before the next delivery attempt |
+
+## Design principles
+
+**No dependencies.** Zero runtime dependencies — uses Node's built-in `crypto` module only.
+
+**Deterministic.** Given the same inputs, `sign` and `verify` always produce the same output.
+No timestamps, no nonces, no side effects.
+
+**Portable.** The signature format is a plain `sha256=<hex>` string — readable by any HMAC
+implementation in any language.
+
+## Install
+
+```bash
+npm install @fairsplitt/sigil-core
+```
+
+Requires Node.js 18 or later.

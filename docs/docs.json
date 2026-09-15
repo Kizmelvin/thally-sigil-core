@@ -1,0 +1,22 @@
+{
+  "name": "sigil-core",
+  "description": "Webhook signing, verification, and delivery-retry policy. Dependency-free and deterministic.",
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": ["introduction", "quickstart"]
+    },
+    {
+      "group": "Core Concepts",
+      "pages": ["concepts/signing", "concepts/verification", "concepts/retry-policy"]
+    },
+    {
+      "group": "API Reference",
+      "pages": ["api/sign", "api/verify", "api/decode"]
+    },
+    {
+      "group": "Reference",
+      "pages": ["changelog"]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+---
+title: Quickstart
+description: Sign and verify your first webhook in under five minutes.
+---
+
+# Quickstart
+
+## 1. Install
+
+```bash
+npm install @fairsplitt/sigil-core
+```
+
+## 2. Sign a payload
+
+```typescript
+import { sign } from '@fairsplitt/sigil-core'
+
+const secret = 'sk_live_abc123'
+const payload = JSON.stringify({ event: 'payment.completed', amount: 4200 })
+
+const signature = sign(payload, secret)
+// "sha256=3b4cf8e1..."
+
+// Attach to your outgoing webhook:
+// X-Sigil-Signature: sha256=3b4cf8e1...
+```
+
+## 3. Verify on the receiving end
+
+```typescript
+import { verify } from '@fairsplitt/sigil-core'
+
+const isValid = verify(
+  req.rawBody,                              // raw string — not parsed JSON
+  req.headers['x-sigil-signature'],
+  process.env.WEBHOOK_SECRET
+)
+
+if (!isValid) {
+  return res.status(401).send('Invalid signature')
+}
+```
+
+> **Important:** Always verify the raw request body before any JSON parsing.
+> Re-serialising can change whitespace and key order, breaking the signature.
+
+## 4. Use the retry schedule
+
+```typescript
+import { retrySchedule } from '@fairsplitt/sigil-core'
+
+const delayMs = retrySchedule(3)  // 1800000 (30 minutes)
+```

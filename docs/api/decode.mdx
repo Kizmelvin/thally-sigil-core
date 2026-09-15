@@ -1,0 +1,37 @@
+---
+title: decode()
+description: Decodes a Sigil signature string into its algorithm and digest components.
+---
+
+# decode(signature)
+
+## Signature
+
+```typescript
+function decode(signature: string): { algorithm: string; digest: string }
+```
+
+## Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `signature` | `string` | A `sha256=<hex>` signature string |
+
+## Returns
+
+| Field | Type | Example |
+|-------|------|---------|
+| `algorithm` | `string` | `"sha256"` |
+| `digest` | `string` | `"9f86d081..."` |
+
+## Example
+
+```typescript
+import { decode } from '@fairsplitt/sigil-core'
+
+const { algorithm, digest } = decode('sha256=9f86d081...')
+```
+
+## Throws
+
+`Error` if the signature is not in `<algorithm>=<hex>` format.
